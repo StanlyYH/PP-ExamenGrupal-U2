@@ -1,0 +1,23 @@
+info:
+  name: Crear Simulación
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/simulaciones"
+  body:
+    type: json
+    data: |-
+      {
+        "depositoInicial": 10000,
+        "tasaInteresAnual": 0.05,
+        "plazoAnios": 3
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
