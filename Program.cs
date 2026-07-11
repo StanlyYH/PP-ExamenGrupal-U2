@@ -1,13 +1,12 @@
+using ApiCuentaAhorros.Extensiones;
+
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-builder.Services.AddControllers();
-
-builder.Services.AddOpenApi();
+builder.Services.AgregarServiciosAplicacion(
+    builder.Configuration
+);
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -15,8 +14,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
