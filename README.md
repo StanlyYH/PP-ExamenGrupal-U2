@@ -1,6 +1,6 @@
 # ApiCuentaAhorros
 
-API REST desarrollada con ASP.NET Core para registrar simulaciones de cuentas de ahorro y consultar sus resultados y proyecciones.
+API REST desarrollada con ASP.NET Core para registrar simulaciones de cuentas de ahorro, almacenar los resultados y consultar proyecciones mensuales y anuales.
 
 ## Tecnologias
 
@@ -10,11 +10,12 @@ API REST desarrollada con ASP.NET Core para registrar simulaciones de cuentas de
 - Entity Framework Core 10.0.9
 - SQLite
 - OpenAPI
+- Scalar
 - Mapeadores manuales
 
 ## Caracteristicas
 
-La aplicacion permitira:
+La aplicacion permite:
 
 - Crear simulaciones de cuentas de ahorro.
 - Consultar todas las simulaciones almacenadas.
@@ -28,15 +29,19 @@ La tasa de interes anual se recibe en formato decimal:
 - `0.05` representa 5 %.
 - `0.08` representa 8 %.
 
-Los calculos internos no deben redondearse. Los valores monetarios se redondean a dos decimales solamente al construir las respuestas.
+Los calculos internos no se redondean durante cada operacion. Los valores monetarios se redondean a dos decimales al construir las respuestas.
 
 ## Base de datos
 
-La aplicacion utiliza una base de datos SQLite llamada `cuenta-ahorros.db`.
+La aplicacion utiliza una base de datos SQLite llamada:
+
+    cuenta-ahorros.db
 
 La cadena de conexion se encuentra en `appsettings.json` con el nombre `ConexionSQLite`:
 
     Data Source=cuenta-ahorros.db
+
+El archivo de base de datos se genera localmente y esta ignorado por Git.
 
 ## Estructura principal
 
@@ -62,8 +67,8 @@ La cadena de conexion se encuentra en `appsettings.json` con el nombre `Conexion
 - Interfaces de servicios.
 - Configuracion de SQLite.
 - Configuracion de dependencias.
-- Integracion final.
-- Migraciones y pruebas finales.
+- Migraciones.
+- Integracion y pruebas finales.
 
 ### Derick
 
@@ -81,23 +86,113 @@ Desde la carpeta raiz del proyecto:
     dotnet restore
     dotnet build
 
+## Aplicar la migracion
+
+La migracion inicial incluida en el proyecto se aplica con:
+
+    dotnet ef database update
+
+Para consultar las migraciones disponibles y aplicadas:
+
+    dotnet ef migrations list
+
 ## Ejecutar la API
 
-Cuando todas las implementaciones del equipo hayan sido integradas:
+Desde la carpeta raiz:
 
     dotnet run
 
-## Migraciones
+La configuracion local inicia la API en:
 
-La migracion inicial y la creacion de la base de datos se realizaran durante la fase final de integracion, despues de incorporar las implementaciones de todos los integrantes.
+    http://localhost:5256
 
-## Restricciones
+## Documentacion interactiva
 
-El proyecto no utiliza:
+En el ambiente de desarrollo, Scalar esta disponible en:
 
-- AutoMapper.
-- Frontend.
-- Autenticacion.
-- JWT.
-- Usuarios.
-- Roles.
+    http://localhost:5256/scalar/v1
+
+El documento OpenAPI se encuentra en:
+
+    http://localhost:5256/openapi/v1.json
+
+## Endpoints
+
+### Crear una simulacion
+
+    POST /api/simulaciones
+
+Ejemplo del cuerpo:
+
+    {
+      "depositoInicial": 10000,
+      "tasaInteresAnual": 0.05,
+      "plazoAnios": 2
+    }
+
+Respuesta correcta:
+
+    201 Created
+
+### Listar simulaciones
+
+    GET /api/simulaciones
+
+Respuesta correcta:
+
+    200 OK
+
+### Obtener una simulacion por ID
+
+    GET /api/simulaciones/{id}
+
+Respuestas posibles:
+
+    200 OK
+    404 Not Found
+
+### Obtener la proyeccion mensual
+
+    GET /api/simulaciones/{id}/proyeccion-mensual
+
+Respuestas posibles:
+
+    200 OK
+    404 Not Found
+
+### Obtener la proyeccion anual
+
+    GET /api/simulaciones/{id}/proyeccion-anual
+
+Respuestas posibles:
+
+    200 OK
+    404 Not Found
+
+## Validaciones
+
+Los siguientes valores deben ser mayores que cero:
+
+- Deposito inicial.
+- Tasa de interes anual.
+- Plazo en anios.
+
+Cuando los datos son invalidos, la API devuelve:
+
+    400 Bad Request
+
+## Pruebas realizadas
+
+Durante la integracion final se comprobaron correctamente:
+
+- Restauracion de dependencias.
+- Compilacion del proyecto.
+- Aplicacion de la migracion inicial.
+- Creacion de `cuenta-ahorros.db`.
+- Persistencia de simulaciones en SQLite.
+- Codigo `200 OK`.
+- Codigo `201 Created`.
+- Codigo `400 Bad Request`.
+- Codigo `404 Not Found`.
+- Proyecciones mensuales.
+- Proyecciones anuales.
